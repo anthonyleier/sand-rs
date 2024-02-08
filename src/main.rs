@@ -1,17 +1,14 @@
-fn montar_grade(linhas: usize, colunas: usize) -> Vec<Vec<i32>> {
-    let mut grade: Vec<Vec<i32>> = Vec::new();
+const LINHAS: usize = 5;
+const COLUNAS: usize = 10;
 
-    for _ in 0..linhas {
-        let linha: Vec<i32> = vec![0; colunas];
-        grade.push(linha);
-    }
-
-    return grade;
+fn montar_grade() -> [[i32; COLUNAS]; LINHAS] {
+    let grade: [[i32; COLUNAS]; LINHAS] = [[0; COLUNAS]; LINHAS];
+    grade
 }
 
-fn imprimir_grade(grade: Vec<Vec<i32>>) {
-    for i in 0..grade.len() {
-        for j in 0..grade.len() {
+fn imprimir_grade(grade: [[i32; COLUNAS]; LINHAS]) {
+    for i in 0..LINHAS {
+        for j in 0..COLUNAS {
             print!("[{}]", grade[i][j]);
         }
         println!("");
@@ -19,7 +16,7 @@ fn imprimir_grade(grade: Vec<Vec<i32>>) {
 }
 
 fn main() {
-    let mut grade = montar_grade(5, 5);
+    let mut grade = montar_grade();
     grade[3][4] = 1;
     imprimir_grade(grade);
 }
