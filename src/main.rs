@@ -7,18 +7,18 @@ mod matriz;
 use matriz::Matriz;
 
 struct State {
-    dt: std::time::Duration,
+    matriz: Matriz,
 }
 
 impl ggez::event::EventHandler<GameError> for State {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
-        self.dt = ctx.time.delta();
+        self.matriz = Matriz::new(10, 10);
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::BLACK);
 
-        let mensagem = format!("Hello ggez! dt = {}ms", self.dt.as_millis());
+        let mensagem = format!("{:?}", self.matriz);
         let texto = graphics::Text::new(mensagem);
 
         canvas.draw(&texto, graphics::DrawParam::default());
@@ -27,30 +27,31 @@ impl ggez::event::EventHandler<GameError> for State {
     }
 }
 
-// pub fn main() {
-//     let state = State {
-//         dt: std::time::Duration::new(0, 0),
-//     };
+pub fn main() {
+    let state = State {
+        matriz: Matriz::new(10, 10),
+    };
 
-//     let mut c = conf::Conf::new();
-//     c.window_mode = WindowMode {
-//         width: 200.0,
-//         height: 200.0,
-//         ..Default::default()
-//     };
-//     c.window_setup = WindowSetup {
-//         title: "Sand".to_owned(),
-//         ..Default::default()
-//     };
+    let mut c = conf::Conf::new();
+    c.window_mode = WindowMode {
+        width: 200.0,
+        height: 200.0,
+        ..Default::default()
+    };
+    c.window_setup = WindowSetup {
+        title: "Sand".to_owned(),
+        ..Default::default()
+    };
 
-//     let (ctx, event_loop) = ContextBuilder::new("Sand", "anthonyleier")
-//         .default_conf(c)
-//         .build()
-//         .unwrap();
-//     event::run(ctx, event_loop, state);
-// }
+    let (ctx, event_loop) = ContextBuilder::new("Sand", "anthonyleier")
+        .default_conf(c)
+        .build()
+        .unwrap();
 
-fn main() {
-    let matriz = Matriz::new(10, 10);
-    println!("{:?}", matriz);
+    event::run(ctx, event_loop, state);
 }
+
+// fn main() {
+//     let matriz = Matriz::new(10, 10);
+//     println!("{:?}", matriz);
+// }
