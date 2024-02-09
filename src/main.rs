@@ -2,7 +2,7 @@ mod matriz;
 
 use ggez::{
     conf::{self, WindowMode, WindowSetup},
-    event, graphics, Context, ContextBuilder, GameError, GameResult,
+    event, graphics, input, Context, ContextBuilder, GameError, GameResult,
 };
 use matriz::Matriz;
 
@@ -12,6 +12,19 @@ const TAMANHO: f32 = 20.0;
 
 struct State {
     matriz: Matriz,
+    mouse_posicao: (usize, usize),
+}
+impl State {
+    fn coordenadas_para_indice(&self, x: f32, y: f32) -> Option<(usize, usize)> {
+        let i = (x / TAMANHO) as usize;
+        let j = (y / TAMANHO) as usize;
+
+        if i < LINHAS && j < COLUNAS {
+            Some((i, j))
+        } else {
+            None
+        }
+    }
 }
 
 impl ggez::event::EventHandler<GameError> for State {
@@ -38,6 +51,17 @@ impl ggez::event::EventHandler<GameError> for State {
             }
         }
 
+        let mouse = ctx.mouse.position();
+        if let Some((i, j)) = self.coordenadas_para_indice(mouse.x, mouse.y) {
+            let rect = graphics::Mesh::new_rectangle(
+                ctx,
+                graphics::DrawMode::fill(),
+                graphics::Rect::new(i as f32 * TAMANHO, j as f32 * TAMANHO, TAMANHO, TAMANHO),
+                graphics::Color::CYAN,
+            )?;
+            canvas.draw(&rect, graphics::DrawParam::default());
+        }
+
         canvas.finish(ctx)?;
         Ok(())
     }
@@ -49,7 +73,10 @@ pub fn main() {
     matriz.grade[3][4] = 1;
     matriz.grade[4][3] = 1;
 
-    let state = State { matriz: matriz };
+    let state = State {
+        matriz: matriz,
+        mouse_posicao: (0, 0),
+    };
 
     let mut c = conf::Conf::new();
     c.window_mode = WindowMode {
