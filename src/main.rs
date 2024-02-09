@@ -2,7 +2,8 @@ mod matriz;
 
 use ggez::{
     conf::{self, WindowMode, WindowSetup},
-    event, graphics, input, Context, ContextBuilder, GameError, GameResult,
+    event::{self, MouseButton},
+    graphics, Context, ContextBuilder, GameError, GameResult,
 };
 use matriz::Matriz;
 
@@ -12,7 +13,6 @@ const TAMANHO: f32 = 20.0;
 
 struct State {
     matriz: Matriz,
-    mouse_posicao: (usize, usize),
 }
 impl State {
     fn coordenadas_para_indice(&self, x: f32, y: f32) -> Option<(usize, usize)> {
@@ -65,6 +65,25 @@ impl ggez::event::EventHandler<GameError> for State {
         canvas.finish(ctx)?;
         Ok(())
     }
+    fn mouse_button_down_event(
+        &mut self,
+        ctx: &mut Context,
+        button: MouseButton,
+        _x: f32,
+        _y: f32,
+    ) -> GameResult {
+        if button == MouseButton::Left {
+            let mouse = ctx.mouse.position();
+            if let Some((i, j)) = self.coordenadas_para_indice(mouse.x, mouse.y) {
+                if self.matriz.grade[i][j] == 0 {
+                    self.matriz.grade[i][j] = 1;
+                } else {
+                    self.matriz.grade[i][j] = 0;
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 pub fn main() {
@@ -73,10 +92,7 @@ pub fn main() {
     matriz.grade[3][4] = 1;
     matriz.grade[4][3] = 1;
 
-    let state = State {
-        matriz: matriz,
-        mouse_posicao: (0, 0),
-    };
+    let state = State { matriz: matriz };
 
     let mut c = conf::Conf::new();
     c.window_mode = WindowMode {
