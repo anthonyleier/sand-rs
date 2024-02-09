@@ -1,7 +1,7 @@
 use core::fmt;
 
 pub struct Matriz {
-    grade: Vec<Vec<u8>>,
+    pub grade: Vec<Vec<u8>>,
 }
 
 impl Matriz {
