@@ -1,48 +1,49 @@
-use speedy2d::{
-    color::Color,
-    dimen::{Vec2, Vector2},
-    window::WindowHandler,
-    Window,
+use ggez::{
+    conf::{WindowMode, WindowSetup},
+    graphics::Text,
+    *,
 };
 
-const LINHAS: usize = 5;
-const COLUNAS: usize = 10;
-
-fn montar_grade() -> [[i32; COLUNAS]; LINHAS] {
-    let grade: [[i32; COLUNAS]; LINHAS] = [[0; COLUNAS]; LINHAS];
-    grade
+struct State {
+    dt: std::time::Duration,
 }
 
-fn imprimir_grade(grade: [[i32; COLUNAS]; LINHAS]) {
-    for i in 0..LINHAS {
-        for j in 0..COLUNAS {
-            print!("[{}]", grade[i][j]);
-        }
-        println!("");
+impl ggez::event::EventHandler<GameError> for State {
+    fn update(&mut self, ctx: &mut Context) -> GameResult {
+        self.dt = ctx.time.delta();
+        Ok(())
+    }
+    fn draw(&mut self, ctx: &mut Context) -> GameResult {
+        let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::BLACK);
+
+        let mensagem = format!("Hello ggez! dt = {}ms", self.dt.as_millis());
+        let texto = graphics::Text::new(mensagem);
+
+        canvas.draw(&texto, graphics::DrawParam::default());
+        canvas.finish(ctx)?;
+        Ok(())
     }
 }
 
-struct MyWindowHandler {}
-impl WindowHandler for MyWindowHandler {
-    fn on_draw(
-        &mut self,
-        helper: &mut speedy2d::window::WindowHelper<()>,
-        graphics: &mut speedy2d::Graphics2D,
-    ) {
-        let x = Vec2::new(0.0, 0.0);
-        let y = Vec2::new(100.0, 0.0);
-        let z = Vec2::new(100.0, 100.0);
-        let w = Vec2::new(0.0, 100.0);
-        graphics.draw_quad([x, y, z, w], Color::RED);
-    }
-}
+pub fn main() {
+    let state = State {
+        dt: std::time::Duration::new(0, 0),
+    };
 
-fn main() {
-    let mut grade = montar_grade();
-    grade[3][4] = 1;
-    imprimir_grade(grade);
+    let mut c = conf::Conf::new();
+    c.window_mode = WindowMode {
+        width: 200.0,
+        height: 200.0,
+        ..Default::default()
+    };
+    c.window_setup = WindowSetup {
+        title: "Sand".to_owned(),
+        ..Default::default()
+    };
 
-    let game = Window::new_centered("Sand", (800, 480)).unwrap();
-    let window = MyWindowHandler {};
-    game.run_loop(window);
+    let (ctx, event_loop) = ContextBuilder::new("Sand", "anthonyleier")
+        .default_conf(c)
+        .build()
+        .unwrap();
+    event::run(ctx, event_loop, state);
 }
