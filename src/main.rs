@@ -15,44 +15,26 @@ struct State {
 }
 
 impl ggez::event::EventHandler<GameError> for State {
-    fn update(&mut self, ctx: &mut Context) -> GameResult {
-        // self.matriz = Matriz::new(10, 10);
+    fn update(&mut self, _ctx: &mut Context) -> GameResult {
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::BLACK);
 
         for (i, linha) in self.matriz.grade.iter().enumerate() {
-            for (j, valor) in linha.iter().enumerate() {
-                if *valor == 0 {
-                    let rect = graphics::Mesh::new_rectangle(
-                        ctx,
-                        graphics::DrawMode::fill(),
-                        graphics::Rect::new(
-                            i as f32 * TAMANHO,
-                            j as f32 * TAMANHO,
-                            TAMANHO,
-                            TAMANHO,
-                        ),
-                        graphics::Color::RED,
-                    )?;
-                    canvas.draw(&rect, graphics::DrawParam::default());
-                } else if *valor == 1 as u8 {
-                    let rect = graphics::Mesh::new_rectangle(
-                        ctx,
-                        graphics::DrawMode::fill(),
-                        graphics::Rect::new(
-                            i as f32 * TAMANHO,
-                            j as f32 * TAMANHO,
-                            TAMANHO,
-                            TAMANHO,
-                        ),
-                        graphics::Color::BLUE,
-                    )?;
-                    canvas.draw(&rect, graphics::DrawParam::default());
-                } else {
-                    println!("lascouse tudo");
-                }
+            for (j, &valor) in linha.iter().enumerate() {
+                let cor = match valor {
+                    0 => graphics::Color::RED,
+                    1 => graphics::Color::BLUE,
+                    _ => graphics::Color::BLACK,
+                };
+                let rect = graphics::Mesh::new_rectangle(
+                    ctx,
+                    graphics::DrawMode::fill(),
+                    graphics::Rect::new(i as f32 * TAMANHO, j as f32 * TAMANHO, TAMANHO, TAMANHO),
+                    cor,
+                )?;
+                canvas.draw(&rect, graphics::DrawParam::default());
             }
         }
 
@@ -63,8 +45,9 @@ impl ggez::event::EventHandler<GameError> for State {
 
 pub fn main() {
     let mut matriz = Matriz::new(LINHAS, COLUNAS);
+    matriz.grade[2][2] = 1;
     matriz.grade[3][4] = 1;
-    println!("{:?}", matriz);
+    matriz.grade[4][3] = 1;
 
     let state = State { matriz: matriz };
 
