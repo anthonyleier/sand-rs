@@ -18,10 +18,14 @@ impl ggez::event::EventHandler<GameError> for State {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::BLACK);
 
-        let mensagem = format!("{:?}", self.matriz);
-        let texto = graphics::Text::new(mensagem);
+        let rect = graphics::Mesh::new_rectangle(
+            ctx,
+            graphics::DrawMode::fill(),
+            graphics::Rect::new(0.0, 0.0, 20.0, 20.0),
+            graphics::Color::RED,
+        )?;
 
-        canvas.draw(&texto, graphics::DrawParam::default());
+        canvas.draw(&rect, graphics::DrawParam::default());
         canvas.finish(ctx)?;
         Ok(())
     }
