@@ -1,5 +1,6 @@
 use core::fmt;
 
+#[derive(Clone)]
 pub struct Matriz {
     pub grade: Vec<Vec<u8>>,
 }

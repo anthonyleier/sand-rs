@@ -29,6 +29,22 @@ impl State {
 
 impl ggez::event::EventHandler<GameError> for State {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
+        let mut proxima_matriz = self.matriz.clone();
+        for (i, linha) in self.matriz.grade.iter().enumerate() {
+            for (j, valor) in linha.iter().enumerate() {
+                let pixel = self.matriz.grade[i][j];
+                if pixel == 1 {
+                    if j + 1 < COLUNAS {
+                        let embaixo = self.matriz.grade[i][j + 1];
+                        if embaixo == 0 {
+                            proxima_matriz.grade[i][j] = 0;
+                            proxima_matriz.grade[i][j + 1] = 1;
+                        }
+                    }
+                }
+            }
+        }
+        self.matriz = proxima_matriz;
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
@@ -87,11 +103,7 @@ impl ggez::event::EventHandler<GameError> for State {
 }
 
 pub fn main() {
-    let mut matriz = Matriz::new(LINHAS, COLUNAS);
-    matriz.grade[2][2] = 1;
-    matriz.grade[3][4] = 1;
-    matriz.grade[4][3] = 1;
-
+    let matriz = Matriz::new(LINHAS, COLUNAS);
     let state = State { matriz: matriz };
 
     let mut c = conf::Conf::new();
