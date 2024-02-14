@@ -15,8 +15,16 @@ const TAMANHO: f32 = 10.0;
 
 struct State {
     matriz: Matriz,
+    hue: u8,
 }
 impl State {
+    fn aumentar_hue(&mut self) {
+        if let Some(resultado) = self.hue.checked_add(5) {
+            self.hue = resultado;
+        } else {
+            self.hue = 1;
+        }
+    }
     fn coordenadas_para_indice(&self, x: f32, y: f32) -> Option<(usize, usize)> {
         let i = (x / TAMANHO) as usize;
         let j = (y / TAMANHO) as usize;
@@ -35,7 +43,7 @@ impl ggez::event::EventHandler<GameError> for State {
         for (i, linha) in self.matriz.grade.iter().enumerate() {
             for (j, valor) in linha.iter().enumerate() {
                 let pixel = self.matriz.grade[i][j];
-                if pixel == 1 {
+                if pixel > 0 {
                     if j + 1 < COLUNAS {
                         let mut pode_ir_esquerda = true;
                         let mut pode_ir_direita = true;
@@ -68,13 +76,13 @@ impl ggez::event::EventHandler<GameError> for State {
 
                         if embaixo == 0 {
                             proxima_matriz.grade[i][j] = 0;
-                            proxima_matriz.grade[i][j + 1] = 1;
+                            proxima_matriz.grade[i][j + 1] = self.matriz.grade[i][j];
                         } else if pode_ir_esquerda && embaixo_esquerda == 0 {
                             proxima_matriz.grade[i][j] = 0;
-                            proxima_matriz.grade[i - 1][j + 1] = 1;
+                            proxima_matriz.grade[i - 1][j + 1] = self.matriz.grade[i][j];
                         } else if pode_ir_direita && embaixo_direita == 0 {
                             proxima_matriz.grade[i][j] = 0;
-                            proxima_matriz.grade[i + 1][j + 1] = 1;
+                            proxima_matriz.grade[i + 1][j + 1] = self.matriz.grade[i][j];
                         }
                     }
                 }
@@ -88,7 +96,7 @@ impl ggez::event::EventHandler<GameError> for State {
 
         for (i, linha) in self.matriz.grade.iter().enumerate() {
             for (j, &valor) in linha.iter().enumerate() {
-                if valor == 1 {
+                if valor > 0 {
                     let rect = graphics::Mesh::new_rectangle(
                         ctx,
                         graphics::DrawMode::fill(),
@@ -98,7 +106,7 @@ impl ggez::event::EventHandler<GameError> for State {
                             TAMANHO,
                             TAMANHO,
                         ),
-                        graphics::Color::YELLOW,
+                        gerar_cor(valor),
                     )?;
                     canvas.draw(&rect, graphics::DrawParam::default());
                 }
@@ -125,9 +133,10 @@ impl ggez::event::EventHandler<GameError> for State {
                     for j in -limite..=limite {
                         let areia_i = mouse_i as i32 + i;
                         let areia_j = mouse_j as i32 + j;
-                        self.matriz.grade[areia_i as usize][areia_j as usize] = 1;
+                        self.matriz.grade[areia_i as usize][areia_j as usize] = self.hue;
                     }
                 }
+                self.aumentar_hue();
             }
         }
         Ok(())
@@ -136,7 +145,10 @@ impl ggez::event::EventHandler<GameError> for State {
 
 pub fn main() {
     let matriz = Matriz::new(LINHAS, COLUNAS);
-    let state = State { matriz: matriz };
+    let state = State {
+        matriz: matriz,
+        hue: 1,
+    };
 
     let mut c = conf::Conf::new();
     c.window_mode = WindowMode {
