@@ -1,5 +1,7 @@
+mod cor;
 mod matriz;
 
+use cor::gerar_cor;
 use ggez::{
     conf::{self, WindowMode, WindowSetup},
     event::{self, MouseButton},
