@@ -7,8 +7,8 @@ use ggez::{
 };
 use matriz::Matriz;
 
-const LINHAS: usize = 20;
-const COLUNAS: usize = 20;
+const LINHAS: usize = 50;
+const COLUNAS: usize = 50;
 const TAMANHO: f32 = 10.0;
 
 struct State {
@@ -103,17 +103,6 @@ impl ggez::event::EventHandler<GameError> for State {
             }
         }
 
-        let mouse = ctx.mouse.position();
-        if let Some((i, j)) = self.coordenadas_para_indice(mouse.x, mouse.y) {
-            let rect = graphics::Mesh::new_rectangle(
-                ctx,
-                graphics::DrawMode::fill(),
-                graphics::Rect::new(i as f32 * TAMANHO, j as f32 * TAMANHO, TAMANHO, TAMANHO),
-                graphics::Color::CYAN,
-            )?;
-            canvas.draw(&rect, graphics::DrawParam::default());
-        }
-
         canvas.finish(ctx)?;
         Ok(())
     }
@@ -126,8 +115,17 @@ impl ggez::event::EventHandler<GameError> for State {
     ) -> GameResult {
         if button == MouseButton::Left {
             let mouse = ctx.mouse.position();
-            if let Some((i, j)) = self.coordenadas_para_indice(mouse.x, mouse.y) {
-                self.matriz.grade[i][j] = 1;
+            if let Some((mouse_i, mouse_j)) = self.coordenadas_para_indice(mouse.x, mouse.y) {
+                let tamanho_matriz_areia = 3.0;
+                let limite = (tamanho_matriz_areia / 2.0 as f32).floor() as i32;
+
+                for i in -limite..=limite {
+                    for j in -limite..=limite {
+                        let areia_i = mouse_i as i32 + i;
+                        let areia_j = mouse_j as i32 + j;
+                        self.matriz.grade[areia_i as usize][areia_j as usize] = 1;
+                    }
+                }
             }
         }
         Ok(())
@@ -140,8 +138,8 @@ pub fn main() {
 
     let mut c = conf::Conf::new();
     c.window_mode = WindowMode {
-        width: 200.0,
-        height: 200.0,
+        width: 500.0,
+        height: 500.0,
         ..Default::default()
     };
     c.window_setup = WindowSetup {
