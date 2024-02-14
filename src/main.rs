@@ -16,6 +16,7 @@ const TAMANHO: f32 = 10.0;
 struct State {
     matriz: Matriz,
     hue: u8,
+    gerar_areia: bool,
 }
 impl State {
     fn aumentar_hue(&mut self) {
@@ -38,7 +39,23 @@ impl State {
 }
 
 impl ggez::event::EventHandler<GameError> for State {
-    fn update(&mut self, _ctx: &mut Context) -> GameResult {
+    fn update(&mut self, ctx: &mut Context) -> GameResult {
+        if self.gerar_areia {
+            let mouse = ctx.mouse.position();
+            if let Some((mouse_i, mouse_j)) = self.coordenadas_para_indice(mouse.x, mouse.y) {
+                let tamanho_matriz_areia = 3.0;
+                let limite = (tamanho_matriz_areia / 2.0 as f32).floor() as i32;
+
+                for i in -limite..=limite {
+                    for j in -limite..=limite {
+                        let areia_i = mouse_i as i32 + i;
+                        let areia_j = mouse_j as i32 + j;
+                        self.matriz.grade[areia_i as usize][areia_j as usize] = self.hue;
+                    }
+                }
+                self.aumentar_hue();
+            }
+        }
         self.matriz = self.matriz.atualizar();
         Ok(())
     }
@@ -69,26 +86,25 @@ impl ggez::event::EventHandler<GameError> for State {
     }
     fn mouse_button_down_event(
         &mut self,
-        ctx: &mut Context,
+        _ctx: &mut Context,
         button: MouseButton,
         _x: f32,
         _y: f32,
     ) -> GameResult {
         if button == MouseButton::Left {
-            let mouse = ctx.mouse.position();
-            if let Some((mouse_i, mouse_j)) = self.coordenadas_para_indice(mouse.x, mouse.y) {
-                let tamanho_matriz_areia = 3.0;
-                let limite = (tamanho_matriz_areia / 2.0 as f32).floor() as i32;
-
-                for i in -limite..=limite {
-                    for j in -limite..=limite {
-                        let areia_i = mouse_i as i32 + i;
-                        let areia_j = mouse_j as i32 + j;
-                        self.matriz.grade[areia_i as usize][areia_j as usize] = self.hue;
-                    }
-                }
-                self.aumentar_hue();
-            }
+            self.gerar_areia = true;
+        }
+        Ok(())
+    }
+    fn mouse_button_up_event(
+        &mut self,
+        _ctx: &mut Context,
+        button: MouseButton,
+        _x: f32,
+        _y: f32,
+    ) -> GameResult {
+        if button == MouseButton::Left {
+            self.gerar_areia = false;
         }
         Ok(())
     }
@@ -99,6 +115,7 @@ pub fn main() {
     let state = State {
         matriz: matriz,
         hue: 1,
+        gerar_areia: false,
     };
 
     let mut c = conf::Conf::new();
