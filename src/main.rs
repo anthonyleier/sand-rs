@@ -35,50 +35,44 @@ impl ggez::event::EventHandler<GameError> for State {
                 let pixel = self.matriz.grade[i][j];
                 if pixel == 1 {
                     if j + 1 < COLUNAS {
+                        let mut pode_ir_esquerda = true;
+                        let mut pode_ir_direita = true;
+                        let mut embaixo_esquerda = 1;
+                        let mut embaixo_direita = 1;
+
+                        // Caso normal
+                        if i + 1 < LINHAS {
+                            pode_ir_direita = true;
+                            pode_ir_esquerda = true;
+                        }
+
                         // Regra do canto esquerdo
                         if i == 0 {
-                            let embaixo = self.matriz.grade[i][j + 1];
-                            let embaixo_direita = self.matriz.grade[i + 1][j + 1];
-
-                            if embaixo == 0 {
-                                proxima_matriz.grade[i][j] = 0;
-                                proxima_matriz.grade[i][j + 1] = 1;
-                            } else if embaixo_direita == 0 {
-                                proxima_matriz.grade[i][j] = 0;
-                                proxima_matriz.grade[i + 1][j + 1] = 1;
-                            }
+                            pode_ir_esquerda = false;
                         }
 
                         // Regra do canto direito
                         if i + 1 == LINHAS {
-                            let embaixo = self.matriz.grade[i][j + 1];
-                            let embaixo_esquerda = self.matriz.grade[i - 1][j + 1];
-
-                            if embaixo == 0 {
-                                proxima_matriz.grade[i][j] = 0;
-                                proxima_matriz.grade[i][j + 1] = 1;
-                            } else if embaixo_esquerda == 0 {
-                                proxima_matriz.grade[i][j] = 0;
-                                proxima_matriz.grade[i - 1][j + 1] = 1;
-                            }
+                            pode_ir_direita = false;
                         }
 
-                        // Padrão
-                        if i != 0 && i + 1 < LINHAS {
-                            let embaixo = self.matriz.grade[i][j + 1];
-                            let embaixo_esquerda = self.matriz.grade[i - 1][j + 1];
-                            let embaixo_direita = self.matriz.grade[i + 1][j + 1];
+                        let embaixo = self.matriz.grade[i][j + 1];
+                        if pode_ir_esquerda {
+                            embaixo_esquerda = self.matriz.grade[i - 1][j + 1];
+                        }
+                        if pode_ir_direita {
+                            embaixo_direita = self.matriz.grade[i + 1][j + 1];
+                        }
 
-                            if embaixo == 0 {
-                                proxima_matriz.grade[i][j] = 0;
-                                proxima_matriz.grade[i][j + 1] = 1;
-                            } else if embaixo_esquerda == 0 {
-                                proxima_matriz.grade[i][j] = 0;
-                                proxima_matriz.grade[i - 1][j + 1] = 1;
-                            } else if embaixo_direita == 0 {
-                                proxima_matriz.grade[i][j] = 0;
-                                proxima_matriz.grade[i + 1][j + 1] = 1;
-                            }
+                        if embaixo == 0 {
+                            proxima_matriz.grade[i][j] = 0;
+                            proxima_matriz.grade[i][j + 1] = 1;
+                        } else if pode_ir_esquerda && embaixo_esquerda == 0 {
+                            proxima_matriz.grade[i][j] = 0;
+                            proxima_matriz.grade[i - 1][j + 1] = 1;
+                        } else if pode_ir_direita && embaixo_direita == 0 {
+                            proxima_matriz.grade[i][j] = 0;
+                            proxima_matriz.grade[i + 1][j + 1] = 1;
                         }
                     }
                 }
