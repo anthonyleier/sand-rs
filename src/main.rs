@@ -63,18 +63,20 @@ impl ggez::event::EventHandler<GameError> for State {
 
         for (i, linha) in self.matriz.grade.iter().enumerate() {
             for (j, &valor) in linha.iter().enumerate() {
-                let cor = match valor {
-                    0 => graphics::Color::RED,
-                    1 => graphics::Color::BLUE,
-                    _ => graphics::Color::BLACK,
-                };
-                let rect = graphics::Mesh::new_rectangle(
-                    ctx,
-                    graphics::DrawMode::fill(),
-                    graphics::Rect::new(i as f32 * TAMANHO, j as f32 * TAMANHO, TAMANHO, TAMANHO),
-                    cor,
-                )?;
-                canvas.draw(&rect, graphics::DrawParam::default());
+                if valor == 1 {
+                    let rect = graphics::Mesh::new_rectangle(
+                        ctx,
+                        graphics::DrawMode::fill(),
+                        graphics::Rect::new(
+                            i as f32 * TAMANHO,
+                            j as f32 * TAMANHO,
+                            TAMANHO,
+                            TAMANHO,
+                        ),
+                        graphics::Color::BLUE,
+                    )?;
+                    canvas.draw(&rect, graphics::DrawParam::default());
+                }
             }
         }
 
@@ -102,6 +104,7 @@ impl ggez::event::EventHandler<GameError> for State {
         if button == MouseButton::Left {
             let mouse = ctx.mouse.position();
             if let Some((i, j)) = self.coordenadas_para_indice(mouse.x, mouse.y) {
+                println!("Colocando areia no [{}][{}]", i, j);
                 if self.matriz.grade[i][j] == 0 {
                     self.matriz.grade[i][j] = 1;
                 } else {
