@@ -76,13 +76,13 @@ impl ggez::event::EventHandler<GameError> for State {
 
                         if embaixo == 0 {
                             proxima_matriz.grade[i][j] = 0;
-                            proxima_matriz.grade[i][j + 1] = self.matriz.grade[i][j];
+                            proxima_matriz.grade[i][j + 1] = pixel;
                         } else if pode_ir_esquerda && embaixo_esquerda == 0 {
                             proxima_matriz.grade[i][j] = 0;
-                            proxima_matriz.grade[i - 1][j + 1] = self.matriz.grade[i][j];
+                            proxima_matriz.grade[i - 1][j + 1] = pixel;
                         } else if pode_ir_direita && embaixo_direita == 0 {
                             proxima_matriz.grade[i][j] = 0;
-                            proxima_matriz.grade[i + 1][j + 1] = self.matriz.grade[i][j];
+                            proxima_matriz.grade[i + 1][j + 1] = pixel;
                         }
                     }
                 }
