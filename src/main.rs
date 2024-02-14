@@ -7,9 +7,9 @@ use ggez::{
 };
 use matriz::Matriz;
 
-const LINHAS: usize = 10;
-const COLUNAS: usize = 10;
-const TAMANHO: f32 = 20.0;
+const LINHAS: usize = 20;
+const COLUNAS: usize = 20;
+const TAMANHO: f32 = 10.0;
 
 struct State {
     matriz: Matriz,
@@ -96,7 +96,7 @@ impl ggez::event::EventHandler<GameError> for State {
                             TAMANHO,
                             TAMANHO,
                         ),
-                        graphics::Color::BLUE,
+                        graphics::Color::YELLOW,
                     )?;
                     canvas.draw(&rect, graphics::DrawParam::default());
                 }
@@ -127,12 +127,7 @@ impl ggez::event::EventHandler<GameError> for State {
         if button == MouseButton::Left {
             let mouse = ctx.mouse.position();
             if let Some((i, j)) = self.coordenadas_para_indice(mouse.x, mouse.y) {
-                println!("Colocando areia no [{}][{}]", i, j);
-                if self.matriz.grade[i][j] == 0 {
-                    self.matriz.grade[i][j] = 1;
-                } else {
-                    self.matriz.grade[i][j] = 0;
-                }
+                self.matriz.grade[i][j] = 1;
             }
         }
         Ok(())
