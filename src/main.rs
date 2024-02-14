@@ -39,56 +39,7 @@ impl State {
 
 impl ggez::event::EventHandler<GameError> for State {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
-        let mut proxima_matriz = self.matriz.clone();
-        for (i, linha) in self.matriz.grade.iter().enumerate() {
-            for (j, valor) in linha.iter().enumerate() {
-                let pixel = self.matriz.grade[i][j];
-                if pixel > 0 {
-                    if j + 1 < COLUNAS {
-                        let mut pode_ir_esquerda = true;
-                        let mut pode_ir_direita = true;
-                        let mut embaixo_esquerda = 1;
-                        let mut embaixo_direita = 1;
-
-                        // Caso normal
-                        if i + 1 < LINHAS {
-                            pode_ir_direita = true;
-                            pode_ir_esquerda = true;
-                        }
-
-                        // Regra do canto esquerdo
-                        if i == 0 {
-                            pode_ir_esquerda = false;
-                        }
-
-                        // Regra do canto direito
-                        if i + 1 == LINHAS {
-                            pode_ir_direita = false;
-                        }
-
-                        let embaixo = self.matriz.grade[i][j + 1];
-                        if pode_ir_esquerda {
-                            embaixo_esquerda = self.matriz.grade[i - 1][j + 1];
-                        }
-                        if pode_ir_direita {
-                            embaixo_direita = self.matriz.grade[i + 1][j + 1];
-                        }
-
-                        if embaixo == 0 {
-                            proxima_matriz.grade[i][j] = 0;
-                            proxima_matriz.grade[i][j + 1] = pixel;
-                        } else if pode_ir_esquerda && embaixo_esquerda == 0 {
-                            proxima_matriz.grade[i][j] = 0;
-                            proxima_matriz.grade[i - 1][j + 1] = pixel;
-                        } else if pode_ir_direita && embaixo_direita == 0 {
-                            proxima_matriz.grade[i][j] = 0;
-                            proxima_matriz.grade[i + 1][j + 1] = pixel;
-                        }
-                    }
-                }
-            }
-        }
-        self.matriz = proxima_matriz;
+        self.matriz = self.matriz.atualizar();
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
