@@ -34,6 +34,34 @@ impl ggez::event::EventHandler<GameError> for State {
             for (j, valor) in linha.iter().enumerate() {
                 let pixel = self.matriz.grade[i][j];
                 if pixel == 1 {
+                    // Regra do canto esquerdo
+                    if i == 0 && j + 1 < COLUNAS {
+                        let embaixo = self.matriz.grade[i][j + 1];
+                        let embaixo_direita = self.matriz.grade[i + 1][j + 1];
+
+                        if embaixo == 0 {
+                            proxima_matriz.grade[i][j] = 0;
+                            proxima_matriz.grade[i][j + 1] = 1;
+                        } else if embaixo_direita == 0 {
+                            proxima_matriz.grade[i][j] = 0;
+                            proxima_matriz.grade[i + 1][j + 1] = 1;
+                        }
+                    }
+
+                    // Regra do canto direito
+                    if i + 1 == LINHAS && j + 1 < COLUNAS {
+                        let embaixo = self.matriz.grade[i][j + 1];
+                        let embaixo_esquerda = self.matriz.grade[i - 1][j + 1];
+
+                        if embaixo == 0 {
+                            proxima_matriz.grade[i][j] = 0;
+                            proxima_matriz.grade[i][j + 1] = 1;
+                        } else if embaixo_esquerda == 0 {
+                            proxima_matriz.grade[i][j] = 0;
+                            proxima_matriz.grade[i - 1][j + 1] = 1;
+                        }
+                    }
+
                     if let Some(resultado) = i.checked_sub(1) {
                         if i + 1 < LINHAS && j + 1 < COLUNAS {
                             let embaixo = self.matriz.grade[i][j + 1];
