@@ -4,14 +4,16 @@ use core::fmt;
 pub struct Matriz {
     pub linhas: usize,
     pub colunas: usize,
+    pub tamanho: f32,
     pub grade: Vec<Vec<u8>>,
 }
 
 impl Matriz {
-    pub fn new(linhas: usize, colunas: usize) -> Matriz {
+    pub fn new(linhas: usize, colunas: usize, tamanho: f32) -> Matriz {
         Matriz {
             linhas: linhas,
             colunas: colunas,
+            tamanho: tamanho,
             grade: vec![vec![0; colunas]; linhas],
         }
     }

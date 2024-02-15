@@ -1,3 +1,4 @@
+mod constantes;
 mod cor;
 mod matriz;
 
@@ -8,10 +9,6 @@ use ggez::{
     graphics, Context, ContextBuilder, GameError, GameResult,
 };
 use matriz::Matriz;
-
-const LINHAS: usize = 50;
-const COLUNAS: usize = 50;
-const TAMANHO: f32 = 10.0;
 
 struct State {
     matriz: Matriz,
@@ -27,10 +24,10 @@ impl State {
         }
     }
     fn coordenadas_para_indice(&self, x: f32, y: f32) -> Option<(usize, usize)> {
-        let i = (x / TAMANHO) as usize;
-        let j = (y / TAMANHO) as usize;
+        let i = (x / constantes::TAMANHO) as usize;
+        let j = (y / constantes::TAMANHO) as usize;
 
-        if i < LINHAS && j < COLUNAS {
+        if i < constantes::LINHAS && j < constantes::COLUNAS {
             Some((i, j))
         } else {
             None
@@ -60,7 +57,7 @@ impl ggez::event::EventHandler<GameError> for State {
         Ok(())
     }
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
-        let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::BLACK);
+        let mut meshes: Vec<graphics::Mesh> = Vec::new();
 
         for (i, linha) in self.matriz.grade.iter().enumerate() {
             for (j, &valor) in linha.iter().enumerate() {
@@ -69,18 +66,22 @@ impl ggez::event::EventHandler<GameError> for State {
                         ctx,
                         graphics::DrawMode::fill(),
                         graphics::Rect::new(
-                            i as f32 * TAMANHO,
-                            j as f32 * TAMANHO,
-                            TAMANHO,
-                            TAMANHO,
+                            i as f32 * self.matriz.tamanho,
+                            j as f32 * self.matriz.tamanho,
+                            self.matriz.tamanho,
+                            self.matriz.tamanho,
                         ),
                         gerar_cor(valor),
                     )?;
-                    canvas.draw(&rect, graphics::DrawParam::default());
+                    meshes.push(rect);
                 }
             }
         }
 
+        let mut canvas = graphics::Canvas::from_frame(ctx, graphics::Color::BLACK);
+        for mesh in meshes {
+            canvas.draw(&mesh, graphics::DrawParam::default());
+        }
         canvas.finish(ctx)?;
         Ok(())
     }
@@ -111,7 +112,7 @@ impl ggez::event::EventHandler<GameError> for State {
 }
 
 pub fn main() {
-    let matriz = Matriz::new(LINHAS, COLUNAS);
+    let matriz = Matriz::new(constantes::LINHAS, constantes::COLUNAS, constantes::TAMANHO);
     let state = State {
         matriz: matriz,
         hue: 1,
